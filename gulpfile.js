@@ -4,6 +4,11 @@ var gulp = require('gulp');
 // command line args for gulp
 var args = require('yargs').argv;
 
+// prefix with ./ to look for local file instead of node package
+// you can skip the extension ("js")
+// n.b. execute the returned function to get access to configured values
+var config = require('./gulp.config')();
+
 // autoloading gulp-plugins, removed the need
 // for separate requires. use $.nameOfThePluginWithoutGulpDash
 var $ = require('gulp-load-plugins')({
@@ -11,7 +16,7 @@ var $ = require('gulp-load-plugins')({
 });
 
 // bare bones test
-gulp.task('hello-world', function () {
+gulp.task('hello-world', function() {
     console.log('hello world!');
 });
 
@@ -21,15 +26,16 @@ gulp.task('hello-world', function () {
 // - gulp-jshint
 // - gulp-if
 // - jshint-stylish
-gulp.task('check-style', function () {
+gulp.task('check-style', function() {
 
     log('checking code with jscs and jshint...');
 
     return gulp
-        .src([
-           './src/**/*.js',
-           './*.js'
-       ])
+        //        .src([
+        //           './src/**/*.js',
+        //           './*.js'
+        //       ])
+        .src(config.jsfiles)
         .pipe($.if(args.verbose, $.print()))
         .pipe($.jscs())
         .pipe($.jshint())
@@ -43,14 +49,14 @@ gulp.task('check-style', function () {
 
 // logs string and object messages
 function log(message) {
-    if (typeof (message) === 'object') {
+    if (typeof(message) === 'object') {
         for (var item in message) {
             if (message.hasOwnProperty(item)) {
                 $.util.log($.util.colors.blue(message[item]));
             }
         }
     }
-    if (typeof (message) === 'string') {
+    if (typeof(message) === 'string') {
         $.util.log($.util.colors.blue(message));
     }
 }
