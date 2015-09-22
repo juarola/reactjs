@@ -1,0 +1,21 @@
+{
+  "name": "ReactJS-exploration",
+  "version": "0.1.0",
+  "description": "Exploring ReactJS",
+  "authors": [
+    "Jukka Arola"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/jarola/reactjs",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "devDependencies": {
+    
+  },
+  "dependencies": {
+    
+  }
+}
