@@ -13,9 +13,9 @@
     "bower_components"
   ],
   "devDependencies": {
-    
+    "react": "~0.13.3"
   },
   "dependencies": {
-    
+    "react": "~0.13.3"
   }
 }
