@@ -2,8 +2,12 @@
 <html>
 
 <head>
-    <script type="text/javascript" src="../../../bower_components/react/react.js"></script>
-    <script type="text/javascript" src="../../../bower_components/react/JSXTransformer.js"></script>
+    <!-- bower:css -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />    
+    <!-- endbower -->
+    
+    
+    <link rel="stylesheet" href="/.temp/style.css" />
 </head>
 
 <body>
@@ -13,8 +17,18 @@
 
     <div id="root">
     </div>
+    <button class="btn btn-standard">lol</button>
 
-    <script type="text/jsx" src="scripts/script.js"></script>
+    <!-- bower:js -->
+    <script src="/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/bower_components/react/react.js"></script>
+    <script src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <!-- endbower -->
+    
+    <!-- inject:js -->
+    <script src="/src/client/scripts/script.js"></script>
+    <!-- endinject -->
+    
 </body>
 
 </html>

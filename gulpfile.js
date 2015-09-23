@@ -86,6 +86,26 @@ gulp.task('less-watcher', function() {
     return gulp.watch(config.less, ['less2css']);
 });
 
+gulp.task('wiredep', function() {
+    var options = config.getWiredepDefaultOptions();
+
+    // require wiredep and use it's stream, which
+    // enables piping via gulp.
+    var wiredep = require('wiredep').stream;
+
+    return gulp
+        .src(config.indexFile)
+        .pipe(wiredep(options))
+        .pipe($.inject(gulp.src(config.clientjs)))
+        .pipe(gulp.dest(config.client + '/'));
+});
+
+gulp.task('jsx', function() {
+    gulp.src(config.clientjs)
+        .pipe($.react())
+        .pipe(gulp.dest(config.temp));
+});
+
 ///////////
 
 // primitive error handler, replaced with gulp-plumber
