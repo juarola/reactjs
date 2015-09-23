@@ -86,25 +86,62 @@ gulp.task('less-watcher', function() {
     return gulp.watch(config.less, ['less2css']);
 });
 
-gulp.task('wiredep', function() {
+gulp.task('jsx', function() {
+
+    log('Transpiling jsx to js...');
+
+    gulp.src(config.clientjs)
+        .pipe($.react())
+        .pipe(gulp.dest(config.temp));
+});
+
+/*
+ * This task is run automatically when any
+ * bower packages get installed. Check out
+ * .bowerrc.
+ */
+gulp.task('wiredep', ['jsx'], function() {
+
+    log('Wiring up bower css+js and app js into html...');
+
     var options = config.getWiredepDefaultOptions();
 
     // require wiredep and use it's stream, which
     // enables piping via gulp.
     var wiredep = require('wiredep').stream;
 
+    // n.b. use name-parameter for gulp-inject, because we
+    // are (possibly) injecting in multiple tasks.
     return gulp
         .src(config.indexFile)
+        .pipe($.debug())
         .pipe(wiredep(options))
-        .pipe($.inject(gulp.src(config.clientjs)))
+        .pipe($.inject(gulp.src(config.builtjs, {
+            read: false
+        }), {
+            name: 'scripts'
+        }))
         .pipe(gulp.dest(config.client + '/'));
 });
 
-gulp.task('jsx', function() {
-    gulp.src(config.clientjs)
-        .pipe($.react())
-        .pipe(gulp.dest(config.temp));
+gulp.task('inject', ['wiredep', 'less2css'], function() {
+
+    log('Wiring up app css into html...');
+
+    // n.b. use name-parameter for gulp-inject, because we
+    // are (possibly) injecting in multiple tasks.
+    return gulp
+        .src(config.indexFile)
+        .pipe($.debug())
+        .pipe($.inject(gulp.src(config.builtcss, {
+            read: false
+        }), {
+            name: 'styles'
+        }))
+        .pipe(gulp.dest(config.client + '/'));
 });
+
+gulp.task('default', ['inject']);
 
 ///////////
 

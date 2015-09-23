@@ -1,7 +1,7 @@
 module.exports = function() {
 
     // TODO: replace paths with path-object, f.ex. path.TEMP_DIR etc.
-    
+
     var rootDir = '.';
 
     var sourceDir = rootDir + '/src';
@@ -12,6 +12,8 @@ module.exports = function() {
 
     var clientScripts = clientDir + '/scripts';
 
+    var tempDir = rootDir + '/.temp';
+
     var config = {
 
         /*
@@ -19,7 +21,7 @@ module.exports = function() {
          */
 
         // dir for temporary files
-        temp: rootDir + '/.temp',
+        temp: tempDir,
 
         // all js-files we want to check for styling issues
         jsfiles: [
@@ -31,8 +33,18 @@ module.exports = function() {
 
         client: clientDir,
 
+        builtjs: [
+            tempDir + '/script.js'
+        ],
+
+        builtcss: [
+            tempDir + '/style.css'
+        ],
+        
+        builtjsDir: tempDir + '/scripts',
+
         clientjs: [
-            clientScripts + '**/*.js'
+            clientScripts + '/**/*.js'
             // exclude by prefixing with a bang: f.ex. '!*.spec.js
         ],
 
