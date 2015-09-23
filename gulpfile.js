@@ -17,6 +17,8 @@ var $ = require('gulp-load-plugins')({
     lazy: true
 });
 
+var port = process.env.PORT || config.defaultPort;
+
 // bare bones test
 gulp.task('hello-world', function() {
     console.log('hello world!');
@@ -139,6 +141,35 @@ gulp.task('inject', ['wiredep', 'less2css'], function() {
             name: 'styles'
         }))
         .pipe(gulp.dest(config.client + '/'));
+});
+
+gulp.task('serve-dev', ['inject'], function() {
+
+    var isDev = true;
+
+    var nodeOptions = {
+        script: config.nodeServer,
+        delayTime: 1,
+        env: {
+            'PORT': port,
+            'NODE_ENV': isDev ? 'dev' : 'build'
+        },
+        watch: [config.server]
+    };
+
+    return $.nodemon(nodeOptions)
+        .on('restart', ['check-style'], function(ev) {
+            log('nodemon restarted ' + ev);
+        })
+        .on('start', function() {
+            log('nodemon started');
+        })
+        .on('crash', function() {
+            log('nodemon crash');
+        })
+        .on('exit', function() {
+            log('nodemon exit');
+        });
 });
 
 gulp.task('default', ['inject']);

@@ -40,12 +40,14 @@
     "gulp-jshint": "^1.11.2",
     "gulp-less": "^3.0.3",
     "gulp-load-plugins": "^1.0.0-rc.1",
+    "gulp-nodemon": "^2.0.4",
     "gulp-plumber": "^1.0.1",
     "gulp-print": "^2.0.1",
     "gulp-react": "^3.0.1",
     "gulp-uglify": "^1.4.1",
     "gulp-util": "^3.0.6",
     "jshint-stylish": "^2.0.1",
+    "nodemon": "^1.7.0",
     "wiredep": "^2.2.2",
     "yargs": "^3.25.0"
   }

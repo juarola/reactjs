@@ -15,6 +15,8 @@ var routes;
 var environment = process.env.NODE_ENV;
 
 //app.use(favicon(__dirname + '/favicon.ico'));
+
+//
 app.use(bodyParser.urlencoded({
     extended: true
 }));

@@ -14,6 +14,8 @@ module.exports = function() {
 
     var tempDir = rootDir + '/.temp';
 
+    var server = './src/server/';
+
     var config = {
 
         /*
@@ -40,7 +42,7 @@ module.exports = function() {
         builtcss: [
             tempDir + '/style.css'
         ],
-        
+
         builtjsDir: tempDir + '/scripts',
 
         clientjs: [
@@ -53,11 +55,20 @@ module.exports = function() {
             clientDir + '/styles/*.less'
         ],
 
+        server: server,
+
         bower: {
             json: require(rootDir + '/bower.json'),
             directory: rootDir + '/bower_components/',
             ignorePath: '../..' // ignores path prefixes
-        }
+        },
+
+        /*
+         * Node settings
+         */
+
+        defaultPort: 7203,
+        nodeServer: 'src/server/app.js'
     };
 
     config.getWiredepDefaultOptions = function() {
