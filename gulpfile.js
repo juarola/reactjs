@@ -191,7 +191,7 @@ gulp.task('inject', ['wiredep', 'less2css'], function() {
         .pipe(gulp.dest(config.client + '/'));
 });
 
-gulp.task('serve-build', ['optimize', 'images', 'fonts'], function() {
+gulp.task('serve-build', ['optimize'], function() {
     serve(false);
 });
 
@@ -220,17 +220,40 @@ gulp.task('fonts', ['clean-build-fonts'], function() {
         .pipe(gulp.dest(config.build + '/fonts'));
 });
 
-gulp.task('optimize', ['inject'], function() {
+gulp.task('optimize', ['inject', 'images', 'fonts'], function() {
     log('optimizing js, css and html...');
 
     var assets = $.useref.assets({
         searchPath: './'
     });
 
+    var cssfilter = $.filter('**/*.css', {
+        restore: true
+    });
+
+    var jsfilter = $.filter('**/*.js', {
+        restore: true
+    });
+
     return gulp.src(config.indexFile)
         .pipe($.plumber())
+        // get all the assets
         .pipe(assets)
+        // filter to just the css-assets
+        .pipe(cssfilter)
+        // run csso (css optimizer)
+        .pipe($.csso())
+        // restore to full set of assets
+        .pipe(cssfilter.restore)
+        // filter to just the js-assets
+        .pipe(jsfilter)
+        // run uglify (js optimizer)
+        .pipe($.uglify())
+        // restore to full set of assets
+        .pipe(jsfilter.restore)
+        // restore all the assets
         .pipe(assets.restore())
+        // bundle
         .pipe($.useref())
         .pipe(gulp.dest(config.build));
 
