@@ -92,6 +92,33 @@ gulp.task('clean-temp-css', function(cleaningDone) {
     clean(files, cleaningDone);
 });
 
+gulp.task('clean-build-fonts', function(cleaningDone) {
+
+    log('cleaning font files from build dir...');
+
+    var files = config.build + '/fonts/**/*.*';
+
+    clean(files, cleaningDone);
+});
+
+gulp.task('clean-build-images', function(cleaningDone) {
+
+    log('cleaning image files from build dir...');
+
+    var files = config.build + '/images/**/*.*';
+
+    clean(files, cleaningDone);
+});
+
+gulp.task('clean', function(cleaningDone) {
+    var filesToClean = [].concat(
+        config.build,
+        config.temp);
+    log('cleaning files: ' + $.util.colors.red(filesToClean));
+
+    del(filesToClean, cleaningDone);
+});
+
 gulp.task('less-watcher', function() {
     return gulp.watch(config.less, ['less2css']);
 });
@@ -100,7 +127,7 @@ gulp.task('jsx-watcher', function() {
     return gulp.watch(config.jsxFiles, ['jsx']);
 });
 
-gulp.task('jsx', function() {
+gulp.task('jsx', ['clean-temp-css'], function() {
 
     log('Transpiling jsx to js...');
 
@@ -192,7 +219,22 @@ gulp.task('serve-dev', ['inject'], function() {
         });
 });
 
-gulp.task('fonts', function() {
+gulp.task('images', ['clean-build-images'], function() {
+
+    log('Copying and compressing images...');
+
+    return gulp
+        .src(config.images)
+        .pipe($.imagemin({
+            optimizationLevel: 4
+        }))
+        .pipe(gulp.dest(config.build + '/images'));
+});
+
+gulp.task('fonts', ['clean-build-fonts'], function() {
+
+    log('Copying fonts...');
+
     return gulp
         .src(config.fonts)
         .pipe(gulp.dest(config.build + '/fonts'));

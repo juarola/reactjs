@@ -32,6 +32,10 @@ module.exports = function() {
             './bower_components/font-awesome/fonts/**/*.*'
         ],
 
+        images: [
+            clientDir + '/images/**/*.*'
+        ],
+
         // all js-files we want to check for styling issues
         jsfiles: [
             sourceDir + '/**/*.js',
