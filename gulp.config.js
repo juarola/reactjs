@@ -25,6 +25,13 @@ module.exports = function() {
         // dir for temporary files
         temp: tempDir,
 
+        build: './build',
+
+        fonts: [
+            './bower_components/bootstrap/fonts/**/*.*',
+            './bower_components/font-awesome/fonts/**/*.*'
+        ],
+
         // all js-files we want to check for styling issues
         jsfiles: [
             sourceDir + '/**/*.js',

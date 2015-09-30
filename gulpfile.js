@@ -192,6 +192,12 @@ gulp.task('serve-dev', ['inject'], function() {
         });
 });
 
+gulp.task('fonts', function() {
+    return gulp
+        .src(config.fonts)
+        .pipe(gulp.dest(config.build + '/fonts'));
+});
+
 gulp.task('default', ['help']);
 
 ///////////

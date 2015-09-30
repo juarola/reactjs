@@ -12,7 +12,9 @@
     "node_modules",
     "bower_components"
   ],
-  "devDependencies": {},
+  "devDependencies": {
+    "font-awesome": "~4.4.0"
+  },
   "dependencies": {
     "react": "~0.13.3",
     "bootstrap": "3.3.4"
