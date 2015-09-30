@@ -92,6 +92,15 @@ gulp.task('clean-temp-css', function(cleaningDone) {
     clean(files, cleaningDone);
 });
 
+gulp.task('clean-temp-js', function(cleaningDone) {
+
+    log('cleaning transpiled js files...');
+
+    var files = config.temp + '/**/*.js';
+
+    clean(files, cleaningDone);
+});
+
 gulp.task('clean-build-fonts', function(cleaningDone) {
 
     log('cleaning font files from build dir...');
@@ -127,11 +136,11 @@ gulp.task('jsx-watcher', function() {
     return gulp.watch(config.jsxFiles, ['jsx']);
 });
 
-gulp.task('jsx', ['clean-temp-css'], function() {
+gulp.task('jsx', ['clean-temp-js'], function() {
 
     log('Transpiling jsx to js...');
 
-    gulp.src(config.clientjs)
+    return gulp.src(config.clientjs)
         .pipe($.react())
         .pipe(gulp.dest(config.temp));
 });
@@ -182,9 +191,56 @@ gulp.task('inject', ['wiredep', 'less2css'], function() {
         .pipe(gulp.dest(config.client + '/'));
 });
 
-gulp.task('serve-dev', ['inject'], function() {
+gulp.task('serve-build', ['optimize', 'images', 'fonts'], function() {
+    serve(false);
+});
 
-    var isDev = true;
+gulp.task('serve-dev', ['inject'], function() {
+    serve(true);
+});
+
+gulp.task('images', ['clean-build-images'], function() {
+
+    log('Copying and compressing images...');
+
+    return gulp
+        .src(config.images)
+        .pipe($.imagemin({
+            optimizationLevel: 4
+        }))
+        .pipe(gulp.dest(config.build + '/images'));
+});
+
+gulp.task('fonts', ['clean-build-fonts'], function() {
+
+    log('Copying fonts...');
+
+    return gulp
+        .src(config.fonts)
+        .pipe(gulp.dest(config.build + '/fonts'));
+});
+
+gulp.task('optimize', ['inject'], function() {
+    log('optimizing js, css and html...');
+
+    var assets = $.useref.assets({
+        searchPath: './'
+    });
+
+    return gulp.src(config.indexFile)
+        .pipe($.plumber())
+        .pipe(assets)
+        .pipe(assets.restore())
+        .pipe($.useref())
+        .pipe(gulp.dest(config.build));
+
+});
+
+gulp.task('default', ['help']);
+
+///////////
+
+function serve(isDev) {
 
     var nodeOptions = {
         script: config.nodeServer,
@@ -209,7 +265,7 @@ gulp.task('serve-dev', ['inject'], function() {
         })
         .on('start', function() {
             log('nodemon started');
-            startBrowserSync();
+            startBrowserSync(isDev);
         })
         .on('crash', function() {
             log('nodemon crash');
@@ -217,32 +273,7 @@ gulp.task('serve-dev', ['inject'], function() {
         .on('exit', function() {
             log('nodemon exit');
         });
-});
-
-gulp.task('images', ['clean-build-images'], function() {
-
-    log('Copying and compressing images...');
-
-    return gulp
-        .src(config.images)
-        .pipe($.imagemin({
-            optimizationLevel: 4
-        }))
-        .pipe(gulp.dest(config.build + '/images'));
-});
-
-gulp.task('fonts', ['clean-build-fonts'], function() {
-
-    log('Copying fonts...');
-
-    return gulp
-        .src(config.fonts)
-        .pipe(gulp.dest(config.build + '/fonts'));
-});
-
-gulp.task('default', ['help']);
-
-///////////
+}
 
 function changeEvent(ev) {
     var regex = '/.*(?=/' + config.source;
@@ -250,33 +281,40 @@ function changeEvent(ev) {
     log('File ' + ev.path.replace(regex, '') + ' ' + ev.type);
 }
 
-function startBrowserSync() {
+function startBrowserSync(isDev) {
     if (args.nosync || browserSync.active) {
         return;
     }
 
     log('starting browsersync on port ' + port);
 
-    gulp.watch(config.less, ['less2css'])
-        .on('change', function(ev) {
-            changeEvent(ev);
-        });
+    if (isDev) {
+        gulp.watch(config.less, ['less2css'])
+            .on('change', function(ev) {
+                changeEvent(ev);
+            });
 
-    gulp.watch(config.jsxFiles, ['jsx'])
-        .on('change', function(ev) {
-            changeEvent(ev);
-        });
+        gulp.watch(config.jsxFiles, ['jsx'])
+            .on('change', function(ev) {
+                changeEvent(ev);
+            });
+    } else {
+        gulp.watch([config.less, config.jsfiles], ['optimize', browserSync.reload])
+            .on('change', function(ev) {
+                changeEvent(ev);
+            });
+    }
 
     var options = {
         proxy: 'localhost:' + port,
         port: 3000,
-        files: [
+        files: isDev ? [
             config.client + '/**/*.*',
             '!' + config.less,
             '!' + config.jsxFiles,
             config.temp + '/*.js',
             config.temp + '/*.css'
-        ],
+        ] : [],
         ghostMode: {
             clicks: true,
             scroll: true,
