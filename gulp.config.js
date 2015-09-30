@@ -31,6 +31,10 @@ module.exports = function() {
             rootDir + '/*.js'
         ],
 
+        jsxFiles: [
+            clientDir + '/scripts/script.js'
+        ],
+
         indexFile: clientDir + '/index.html',
 
         client: clientDir,
@@ -68,7 +72,12 @@ module.exports = function() {
          */
 
         defaultPort: 7203,
-        nodeServer: 'src/server/app.js'
+        nodeServer: 'src/server/app.js',
+
+        /*
+         * BrowserSync
+         */
+        browserReloadDelay: 1000
     };
 
     config.getWiredepDefaultOptions = function() {

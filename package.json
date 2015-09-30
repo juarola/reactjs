@@ -28,6 +28,7 @@
     "wiredep": "^2.2.2"
   },
   "devDependencies": {
+    "browser-sync": "^2.9.6",
     "del": "^2.0.2",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.0.1",

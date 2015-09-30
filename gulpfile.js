@@ -4,6 +4,8 @@ var gulp = require('gulp');
 // command line args for gulp
 var args = require('yargs').argv;
 
+var browserSync = require('browser-sync');
+
 // prefix with ./ to look for local file instead of node package
 // you can skip the extension ("js")
 // n.b. execute the returned function to get access to configured values
@@ -88,6 +90,10 @@ gulp.task('less-watcher', function() {
     return gulp.watch(config.less, ['less2css']);
 });
 
+gulp.task('jsx-watcher', function() {
+    return gulp.watch(config.jsxFiles, ['jsx']);
+});
+
 gulp.task('jsx', function() {
 
     log('Transpiling jsx to js...');
@@ -160,9 +166,17 @@ gulp.task('serve-dev', ['inject'], function() {
     return $.nodemon(nodeOptions)
         .on('restart', ['check-style'], function(ev) {
             log('nodemon restarted ' + ev);
+
+            setTimeout(function() {
+                browserSync.notify('realoading browsersync');
+                browserSync.reload({
+                    stream: false
+                });
+            }, config.browserReloadDelay);
         })
         .on('start', function() {
             log('nodemon started');
+            startBrowserSync();
         })
         .on('crash', function() {
             log('nodemon crash');
@@ -175,6 +189,56 @@ gulp.task('serve-dev', ['inject'], function() {
 gulp.task('default', ['inject']);
 
 ///////////
+
+function changeEvent(ev) {
+    var regex = '/.*(?=/' + config.source;
+    log('File ' + ev.path + ' ' + ev.type);
+    log('File ' + ev.path.replace(regex, '') + ' ' + ev.type);
+}
+
+function startBrowserSync() {
+    if (args.nosync || browserSync.active) {
+        return;
+    }
+
+    log('starting browsersync on port ' + port);
+
+    gulp.watch(config.less, ['less2css'])
+        .on('change', function(ev) {
+            changeEvent(ev);
+        });
+
+    gulp.watch(config.jsxFiles, ['jsx'])
+        .on('change', function(ev) {
+            changeEvent(ev);
+        });
+
+    var options = {
+        proxy: 'localhost:' + port,
+        port: 3000,
+        files: [
+            config.client + '/**/*.*',
+            '!' + config.less,
+            '!' + config.jsxFiles,
+            config.temp + '/*.js',
+            config.temp + '/*.css'
+        ],
+        ghostMode: {
+            clicks: true,
+            scroll: true,
+            location: true,
+            forms: true
+        },
+        injectChanges: true,
+        logFileChanges: true,
+        logLevel: 'debug',
+        logPrefix: 'testing-123',
+        notify: true,
+        reloadDelay: 0
+    };
+
+    browserSync(options);
+}
 
 // primitive error handler, replaced with gulp-plumber
 function errorLogger(error) {
