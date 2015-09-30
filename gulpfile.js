@@ -251,10 +251,19 @@ gulp.task('optimize', ['inject', 'images', 'fonts'], function() {
         .pipe($.uglify())
         // restore to full set of assets
         .pipe(jsfilter.restore)
+        // add hash version postfixes to filenames for cache busting
+        .pipe($.rev())
         // restore all the assets
         .pipe(assets.restore())
         // bundle
         .pipe($.useref())
+        // renames all references to "hashed" filenames
+        .pipe($.revReplace())
+        // write out all the code and assets into build dir
+        .pipe(gulp.dest(config.build))
+        // create a manifest file about revisions
+        .pipe($.rev.manifest())
+        // pipe out the revision manifest
         .pipe(gulp.dest(config.build));
 
 });
