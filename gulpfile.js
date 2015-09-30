@@ -21,6 +21,12 @@ var $ = require('gulp-load-plugins')({
 
 var port = process.env.PORT || config.defaultPort;
 
+/*
+    Invoke gulp-task-listing -plugin to output
+    all available gulp tasks.
+ */
+gulp.task('help', $.taskListing);
+
 // bare bones test
 gulp.task('hello-world', function() {
     console.log('hello world!');
@@ -186,7 +192,7 @@ gulp.task('serve-dev', ['inject'], function() {
         });
 });
 
-gulp.task('default', ['inject']);
+gulp.task('default', ['help']);
 
 ///////////
 
